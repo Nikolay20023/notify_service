@@ -1,0 +1,18 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postfix:
+    image: boky/postfix:latest
+    container_name: smtp-server
+    restart: unless-stopped
+    ports:
+      - "587:587"   # Только submission (TLS)
+    environment:
+      - MYHOSTNAME=localhost 
+      - ALLOW_EMPTY_PASSWORD=yes
+      - ALLOW_EMPTY_SENDER_DOMAINS=yes
+      - POSTFIX_myhostname=mail.local
+      - POSTFIX_mydestination=mail.local, localhost
+    volumes:
+      - ./logs:/var/log/postfix
