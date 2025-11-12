@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+    command: python main.py
+    env_file:
+      - .env
+    environment:
+      SMTP_HOST: smtp
+      SMTP_PORT: 587
+    depends_on:
+      smtp:
+        condition: service_started
+
+  smtp:
+    image: boky/postfix:latest
+    container_name: smtp-server
+    restart: unless-stopped
+    ports:
+      - "587:587"
+    environment:
+      MYHOSTNAME: localhost
+      ALLOW_EMPTY_PASSWORD: "yes"
+      ALLOW_EMPTY_SENDER_DOMAINS: "yes"
+      POSTFIX_myhostname: mail.local
+      POSTFIX_mydestination: mail.local, localhost
+    volumes:
+      - ./smtp-docker/logs:/var/log/postfix
+

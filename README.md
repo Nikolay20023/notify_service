@@ -75,16 +75,11 @@ SMTP_PORT=587
 SMTP_USERNAME=notify@mydomain.lv
 SMTP_PASSWORD=your_password
 
-# SMS (Twilio)
-TWILIO_SID=your_twilio_account_sid
-TWILIO_TOKEN=your_twilio_auth_token
-TWILIO_FROM=+1234567890
+# SMS ()
+SMS_API_KEY=your_api_key_from_smsaero
+SMS_SENDER=MyApp
+SMS_API_URL=https://gate.smsaero.ru
 
-# Альтернативный SMS API (опционально)
-SMS_API_URL=https://api.example.com/sms
-SMS_API_KEY=your_sms_api_key
-SMS_FROM=your_sender_name
-```
 
 ## Использование
 
@@ -99,107 +94,6 @@ docker-compose up -d
 
 SMTP сервер будет доступен на `localhost:587`.
 
-### Примеры использования
-
-#### Email уведомления
-
-```python
-from reporters import EmailReporter
-import asyncio
-
-async def main():
-    reporter = EmailReporter()
-    await reporter.send_message(
-        to="recipient@example.com",
-        subject="Тест",
-        text="Это обычный текст",
-        html="<h1>Привет!</h1><p>Это HTML</p>",
-        from_name="Мой Сервис",
-        from_email="notify@mail.local"
-    )
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-#### SMS уведомления (Twilio)
-
-```python
-from reporters import SMSReporter
-from httpx import AsyncClient
-import asyncio
-
-async def main():
-    reporter = SMSReporter()
-    async with AsyncClient() as client:
-        result = await reporter.send_sms(
-            to=["+37112345678"],
-            message="Тестовое SMS сообщение",
-            client=client
-        )
-        print(result)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-#### Telegram уведомления
-
-```python
-from reporters import TelegramReporter
-from httpx import AsyncClient
-import asyncio
-
-async def main():
-    async with AsyncClient() as client:
-        await TelegramReporter.bot_send_message(
-            client=client,
-            chat_id=123456789,
-            text="<b>Привет!</b> Это тестовое сообщение",
-            kb=None  # или список кнопок
-        )
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-## API Репортеров
-
-### EmailReporter
-
-```python
-async def send_message(
-    self,
-    to: str,
-    subject: str,
-    text: str,
-    html: str = None,
-    from_email: str = None,
-    from_name: str = None,
-)
-```
-
-### SMSReporter
-
-```python
-async def send_sms(
-    self,
-    to: List[str],
-    message: str,
-    client: Optional[httpx.AsyncClient] = None,
-) -> dict
-```
-
-### TelegramReporter
-
-```python
-async def bot_send_message(
-    client: AsyncClient,
-    chat_id: int,
-    text: str,
-    kb: list | None = None,
-)
-```
 
 ## Зависимости
 
@@ -213,31 +107,9 @@ async def bot_send_message(
 
 ### Архитектура
 
-Проект использует паттерн Strategy через абстрактный базовый класс `Reporter`. Каждый репортер (Email, SMS, Telegram) реализует свой способ отправки уведомлений.
-
-### Добавление нового репортера
-
-1. Создайте новый класс, наследуемый от `Reporter`:
-```python
-from reporters.absReporter import Reporter
-
-class MyReporter(Reporter):
-    async def send_message(self, *args, **kwargs):
-        # Ваша реализация
-        pass
-```
-
-2. Добавьте класс в `reporters/__init__.py`
+Проект использует абстрактный базовый класс `Reporter`. Каждый репортер (Email, SMS, Telegram) реализует свой способ отправки уведомлений.
 
 ## Логирование
 
 Проект использует `loguru` для логирования. Все репортеры логируют свои действия и ошибки.
-
-## Лицензия
-
-[Укажите лицензию]
-
-## Автор
-
-[Укажите автора]
 

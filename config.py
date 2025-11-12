@@ -11,10 +11,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str | None = None
     SMS_API_URL: str | None = None
     SMS_API_KEY: str | None = None
-    SMS_FROM: str | None = None
-    TWILIO_SID: str | None = None
-    TWILIO_TOKEN: str | None = None
-    TWILIO_FROM: str | None = None
+    SMS_SENDER: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".", ".env")
